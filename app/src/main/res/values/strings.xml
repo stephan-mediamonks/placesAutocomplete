@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestPlacesAutocomplete</string>
+    <string name="search_place_hint">Search a place</string>
+    <string name="no_suggestions_found">No suggestions found</string>
+</resources>

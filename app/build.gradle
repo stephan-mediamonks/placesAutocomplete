@@ -1,0 +1,136 @@
+buildscript {
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        def classpaths = rootProject.ext.ClassPaths
+
+        classpath classpaths.kotlin
+    }
+}
+
+def config = rootProject.ext
+def plugins = config.Plugins
+def libs = config.Libraries
+
+apply plugin: plugins.android_app
+apply plugin: plugins.kotlin
+apply plugin: plugins.kotlin_kapt
+apply plugin: plugins.kotlin_ext
+
+apply from: "$rootDir/config/config.gradle", to: config
+
+android {
+    def versions = config.Versions
+    def appConfig = config.AppConfig
+
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+
+        applicationId appConfig.id
+        versionCode appConfig.versionCode
+        versionName appConfig.versionName
+
+        testInstrumentationRunner libs.test_runner
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField "String", "google_api_key", "\"" + google_api_key + "\""
+        resValue 'string', "google_api_key", google_api_key
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix appConfig.debugSuffix
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+androidExtensions {
+    experimental = true
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation libs.kotlin
+    implementation libs.android_ktx
+
+    // testing
+    androidTestImplementation libs.test_espresso
+    testImplementation libs.test_junit
+
+    // AndroidX
+    implementation libs.androidx_appCompat
+    implementation libs.androidx_cardView
+    implementation libs.androidx_constraintLayout
+    implementation libs.androidx_annotations
+    implementation libs.androidx_recyclerview
+
+    // Lifecycle
+    implementation libs.androidx_lifecycle_viewmodel
+    implementation libs.androidx_lifecycle_ext
+
+    // Rx
+    implementation libs.rxAndroid
+    implementation libs.rxKotlin
+
+    // Play Services
+    implementation libs.play_services_maps
+    implementation libs.play_services_places
+    implementation libs.play_services_location
+    implementation libs.maps_utils
+
+    // Moshi
+    implementation libs.moshi_kotlin
+    kapt libs.moshi_codegen
+
+    // Retrofit
+    implementation libs.retrofit
+    implementation libs.retrofit_moshiConverter
+    implementation libs.retrofit_rxAdapter
+
+    // Timber
+    implementation libs.timber
+
+    // Glide
+    implementation libs.glide
+    annotationProcessor libs.annotationProcessorGlide
+
+    // Dagger
+    implementation libs.dagger
+    kapt libs.dagger_kapt
+    implementation libs.dagger_android
+    implementation libs.dagger_android_support
+    kapt libs.dagger_android_kapt
+    compileOnly libs.annotation_jsr250
+    implementation libs.annotation_inject
+
+    // OkHttp
+    implementation libs.okHttp
+    implementation libs.okHttp_loggingInterceptor
+
+    // Stetho
+    implementation libs.stetho
+}
